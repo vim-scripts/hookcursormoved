@@ -1,0 +1,41 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2037
+
+This experimental plugin provides some help with the definition of 
+functions that should be called when the cursor position changed.
+
+When the cursor position changes, it first checks if a certain condition 
+is met and then calls functions registered in 
+[bg]:hookcursormoved_{CONDITION} (an array).
+
+Pre-defined conditions:
+    linechange
+        The line-number has changed.
+    parenthesis
+        Cursor is over (), [], or {}.
+    syntaxchange
+        The syntax group under the cursor has changed (i.e. the cursor 
+        has moved in/out of a syntax group.
+    syntaxleave
+        b:hookcursormoved_syntax (ARRAY) should contain the syntax names 
+        which should run the hook code.
+    syntaxleave_oneline
+        Same as a above but check also for changes of the line number.
+
+In order to define a new conditions, you have to define a function 
+"HookCursorMoved_{CONDITION}(mode)", which returns true if the condition 
+is met.
+
+Functions are best registered using |hookcursormoved#Register()|.
+Example: >
+
+    function! WhatsGoingOn(mode) "{{{3
+        if mode == 'i'
+            DoThis
+        elseif mode == 'n'
+            DoThat
+        endif
+    endf
+
+    call hookcursormoved#Register('b', 'syntaxchange', function('WhatsGoingOn'))
+
+
