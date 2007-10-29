@@ -54,9 +54,6 @@ please make sure, you have the current version of vimball (vimscript
 
 This script requires tlib (vimscript #1863) to be installed.
 
-Suggested maps (to be set in ~/.vimrc): >
-    <+TEXT+>
-
 
 ------------------------------------------------------------------------
 Contents~
@@ -66,6 +63,7 @@ Contents~
         hookcursormoved#Register ................... |hookcursormoved#Register()|
         hookcursormoved#Test_linechange ............ |hookcursormoved#Test_linechange()|
         hookcursormoved#Test_parenthesis ........... |hookcursormoved#Test_parenthesis()|
+        hookcursormoved#Test_parenthesis_round ..... |hookcursormoved#Test_parenthesis_round()|
         hookcursormoved#Test_syntaxchange .......... |hookcursormoved#Test_syntaxchange()|
         hookcursormoved#Test_syntaxleave ........... |hookcursormoved#Test_syntaxleave()|
         hookcursormoved#Test_syntaxleave_oneline ... |hookcursormoved#Test_syntaxleave_oneline()|
@@ -85,6 +83,9 @@ hookcursormoved#Test_linechange(mode)
 
                                                     *hookcursormoved#Test_parenthesis()*
 hookcursormoved#Test_parenthesis(mode)
+
+                                                    *hookcursormoved#Test_parenthesis_round()*
+hookcursormoved#Test_parenthesis_round(mode)
 
                                                     *hookcursormoved#Test_syntaxchange()*
 hookcursormoved#Test_syntaxchange(mode)

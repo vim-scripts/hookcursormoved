@@ -3,14 +3,14 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-10-11.
-" @Revision:    0.3.84
+" @Last Change: 2007-10-13.
+" @Revision:    0.4.85
 " GetLatestVimScripts: 2037 1 hookcursormoved.vim
 
 if &cp || exists("loaded_hookcursormoved")
     finish
 endif
-let loaded_hookcursormoved = 3
+let loaded_hookcursormoved = 4
 
 let s:save_cpo = &cpo
 set cpo&vim

@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-10-12.
-" @Revision:    0.3.90
+" @Last Change: 2007-10-28.
+" @Revision:    0.3.113
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
@@ -51,6 +51,8 @@ endf
 
 " :def: function! hookcursormoved#Register(condition, fn)
 function! hookcursormoved#Register(condition, fn, ...) "{{{3
+    " TLogVAR a:condition
+    " TLogDBG exists('*hookcursormoved#Test_'. a:condition)
     if exists('*hookcursormoved#Test_'. a:condition)
         call hookcursormoved#Enable(a:condition)
         let var = 'b:hookcursormoved_'. a:condition
@@ -72,7 +74,25 @@ endf
 
 
 function! hookcursormoved#Test_parenthesis(mode) "{{{3
-    return stridx('(){}[]', getline('.')[col('.') - 1]) != -1
+    return s:ChechChars(a:mode, '(){}[]')
+endf
+
+
+function! hookcursormoved#Test_parenthesis_round(mode) "{{{3
+    return s:ChechChars(a:mode, '()')
+endf
+
+
+function! s:ChechChars(mode, chars) "{{{3
+    let li = getline('.')
+    let co = col('.') - 1
+    if a:mode == 'i'
+        let co -= 1
+    endif
+    let ch = li[co]
+    let rv = !empty(ch) && stridx(a:chars, ch) != -1
+    " TLogVAR a:mode, li, co, ch, rv
+    return rv
 endf
 
 
@@ -133,4 +153,7 @@ CHANGES
 - Defined parenthesis, syntaxleave_oneline conditions
 - Removed namespace parameter (everything is buffer-local)
 - Perform less checks (this should be no problem, if you use #Register).
+
+0.4
+- Defined parenthesis_round
 
