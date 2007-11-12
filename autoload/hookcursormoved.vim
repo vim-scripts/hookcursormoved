@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-10-28.
-" @Revision:    0.3.113
+" @Last Change: 2007-11-04.
+" @Revision:    0.3.130
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
@@ -18,9 +18,14 @@ augroup END
 
 
 function! s:RunHooks(mode, condition) "{{{3
+    if !exists('b:hookcursormoved_'. a:mode .'_'. a:condition)
+        return
+    endif
     let b:hookcursormoved_currpos = getpos('.')
-    if hookcursormoved#Test_{a:condition}(a:mode)
-        for HookFn in b:hookcursormoved_{a:condition}
+    " TLogVAR a:condition, g:hookcursormoved_{a:condition}
+    if call(g:hookcursormoved_{a:condition}, [a:mode])
+        let hooks = b:hookcursormoved_{a:mode}_{a:condition}
+        for HookFn in hooks
             " TLogVAR HookFn
             try
                 keepjumps keepmarks call call(HookFn, [a:mode])
@@ -49,18 +54,26 @@ function! hookcursormoved#Enable(condition) "{{{3
 endf
 
 
-" :def: function! hookcursormoved#Register(condition, fn)
+" :def: function! hookcursormoved#Register(condition, fn, ?mode='ni')
 function! hookcursormoved#Register(condition, fn, ...) "{{{3
-    " TLogVAR a:condition
+    let modes = a:0 >= 1 ? a:1 : 'ni'
+    " TLogVAR a:condition, a:fn, mode
     " TLogDBG exists('*hookcursormoved#Test_'. a:condition)
-    if exists('*hookcursormoved#Test_'. a:condition)
+    if exists('g:hookcursormoved_'. a:condition)
         call hookcursormoved#Enable(a:condition)
-        let var = 'b:hookcursormoved_'. a:condition
-        if !exists(var)
-            let {var} = [a:fn]
-        else
-            call add({var}, a:fn)
-        endif
+        for mode in split(modes, '\ze')
+            if stridx(mode, 'i') != -1
+                let var = 'b:hookcursormoved_i_'. a:condition
+            endif
+            if stridx(mode, 'n') != -1
+                let var = 'b:hookcursormoved_n_'. a:condition
+            endif
+            if !exists(var)
+                let {var} = [a:fn]
+            else
+                call add({var}, a:fn)
+            endif
+        endfor
     else
         throw 'hookcursormoved: Unknown condition: '. string(a:condition)
     endif
@@ -80,6 +93,16 @@ endf
 
 function! hookcursormoved#Test_parenthesis_round(mode) "{{{3
     return s:ChechChars(a:mode, '()')
+endf
+
+
+function! hookcursormoved#Test_parenthesis_round_open(mode) "{{{3
+    return s:ChechChars(a:mode, '(')
+endf
+
+
+function! hookcursormoved#Test_parenthesis_round_close(mode) "{{{3
+    return s:ChechChars(a:mode, ')')
 endf
 
 
@@ -137,23 +160,4 @@ function! hookcursormoved#Test_syntaxleave_oneline(mode) "{{{3
     endif
     return 0
 endf
-
-
-finish
-
-CHANGES
-0.1
-- Initial release
-
-0.2
-- Renamed s:Enable() to hookcursormoved#Enable()
-- Renamed s:enabled to b:hookcursormoved_enabled
-
-0.3
-- Defined parenthesis, syntaxleave_oneline conditions
-- Removed namespace parameter (everything is buffer-local)
-- Perform less checks (this should be no problem, if you use #Register).
-
-0.4
-- Defined parenthesis_round
 
