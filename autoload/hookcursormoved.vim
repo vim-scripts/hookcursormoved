@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-11-04.
-" @Revision:    0.3.130
+" @Last Change: 2007-11-18.
+" @Revision:    0.3.141
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
@@ -87,40 +87,27 @@ endf
 
 
 function! hookcursormoved#Test_parenthesis(mode) "{{{3
-    return s:ChechChars(a:mode, '(){}[]')
+    return s:CheckChars(a:mode, '(){}[]')
 endf
 
 
 function! hookcursormoved#Test_parenthesis_round(mode) "{{{3
-    return s:ChechChars(a:mode, '()')
+    return s:CheckChars(a:mode, '()')
 endf
 
 
 function! hookcursormoved#Test_parenthesis_round_open(mode) "{{{3
-    return s:ChechChars(a:mode, '(')
+    return s:CheckChars(a:mode, '(')
 endf
 
 
 function! hookcursormoved#Test_parenthesis_round_close(mode) "{{{3
-    return s:ChechChars(a:mode, ')')
-endf
-
-
-function! s:ChechChars(mode, chars) "{{{3
-    let li = getline('.')
-    let co = col('.') - 1
-    if a:mode == 'i'
-        let co -= 1
-    endif
-    let ch = li[co]
-    let rv = !empty(ch) && stridx(a:chars, ch) != -1
-    " TLogVAR a:mode, li, co, ch, rv
-    return rv
+    return s:CheckChars(a:mode, ')')
 endf
 
 
 function! hookcursormoved#Test_syntaxchange(mode) "{{{3
-    let syntax = synIDattr(synID(b:hookcursormoved_currpos[1], b:hookcursormoved_currpos[2], 1), 'name')
+    let syntax = s:SynId(a:mode, b:hookcursormoved_currpos)
     if exists('b:hookcursormoved_syntax')
         let rv = b:hookcursormoved_syntax != syntax
     else
@@ -132,7 +119,7 @@ endf
 
 
 function! hookcursormoved#Test_syntaxleave(mode) "{{{3
-    let syntax = synIDattr(synID(b:hookcursormoved_oldpos[1], b:hookcursormoved_oldpos[2], 1), 'name')
+    let syntax = s:SynId(a:mode, b:hookcursormoved_oldpos)
     let rv = b:hookcursormoved_syntax != syntax && index(b:hookcursormoved_syntaxleave, syntax) != -1
     let b:hookcursormoved_syntax = syntax
     return rv
@@ -141,7 +128,7 @@ endf
 
 function! hookcursormoved#Test_syntaxleave_oneline(mode) "{{{3
     if exists('b:hookcursormoved_oldpos')
-        let syntax = synIDattr(synID(b:hookcursormoved_oldpos[1], b:hookcursormoved_oldpos[2], 1), 'name')
+        let syntax = s:SynId(a:mode, b:hookcursormoved_oldpos)
         " TLogVAR syntax
         if exists('b:hookcursormoved_syntax') && !empty(syntax)
             " TLogVAR b:hookcursormoved_syntax, syntax
@@ -159,5 +146,31 @@ function! hookcursormoved#Test_syntaxleave_oneline(mode) "{{{3
         return rv
     endif
     return 0
+endf
+
+
+function! s:Col(mode, col) "{{{3
+    let co = a:col - 1
+    if a:mode == 'i'
+        let co -= 1
+    endif
+    return co
+endf
+
+
+function! s:CheckChars(mode, chars) "{{{3
+    let li = getline('.')
+    let co = s:Col(a:mode, col('.'))
+    let ch = li[co]
+    let rv = !empty(ch) && stridx(a:chars, ch) != -1
+    " TLogVAR a:mode, li, co, ch, rv
+    return rv
+endf
+
+
+function! s:SynId(mode, pos) "{{{3
+    let syn = synIDattr(synID(a:pos[1], s:Col(a:mode, a:pos[2]), 1), 'name')
+    " TLogVAR syn
+    return syn
 endf
 
