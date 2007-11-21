@@ -117,33 +117,33 @@ g:hookcursormoved_syntaxleave_oneline (default: 'hookcursormoved#Test_syntaxleav
 autoload/hookcursormoved.vim~
 
                                                     *hookcursormoved#Enable()*
-hookcursormoved#Enable
+hookcursormoved#Enable(condition)
 
                                                     *hookcursormoved#Register()*
-hookcursormoved#Register
+hookcursormoved#Register(condition, fn, ?mode='ni')
 
                                                     *hookcursormoved#Test_linechange()*
-hookcursormoved#Test_linechange
+hookcursormoved#Test_linechange(mode)
 
                                                     *hookcursormoved#Test_parenthesis()*
-hookcursormoved#Test_parenthesis
+hookcursormoved#Test_parenthesis(mode)
 
                                                     *hookcursormoved#Test_parenthesis_round()*
-hookcursormoved#Test_parenthesis_round
+hookcursormoved#Test_parenthesis_round(mode)
 
                                                     *hookcursormoved#Test_parenthesis_round_open()*
-hookcursormoved#Test_parenthesis_round_open
+hookcursormoved#Test_parenthesis_round_open(mode)
 
                                                     *hookcursormoved#Test_parenthesis_round_close()*
-hookcursormoved#Test_parenthesis_round_close
+hookcursormoved#Test_parenthesis_round_close(mode)
 
                                                     *hookcursormoved#Test_syntaxchange()*
-hookcursormoved#Test_syntaxchange
+hookcursormoved#Test_syntaxchange(mode)
 
                                                     *hookcursormoved#Test_syntaxleave()*
-hookcursormoved#Test_syntaxleave
+hookcursormoved#Test_syntaxleave(mode)
 
                                                     *hookcursormoved#Test_syntaxleave_oneline()*
-hookcursormoved#Test_syntaxleave_oneline
+hookcursormoved#Test_syntaxleave_oneline(mode)
 
 

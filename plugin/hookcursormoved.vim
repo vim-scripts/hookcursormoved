@@ -3,14 +3,14 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-11-18.
-" @Revision:    0.6.107
+" @Last Change: 2007-11-19.
+" @Revision:    0.7.114
 " GetLatestVimScripts: 2037 1 hookcursormoved.vim
 
 if &cp || exists("loaded_hookcursormoved")
     finish
 endif
-let loaded_hookcursormoved = 6
+let loaded_hookcursormoved = 7
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -99,5 +99,9 @@ allows to check a condition only in insert or only in normal mode.
 function name as string).
 
 0.6
-- Check correct column in sytax* tests.
+- Check correct column in syntax* tests.
+
+0.7
+- Minor tweaks
+- FIX: Check correct column in s:CheckChars()
 

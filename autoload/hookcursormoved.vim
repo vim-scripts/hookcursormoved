@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-11-18.
-" @Revision:    0.3.141
+" @Last Change: 2007-11-19.
+" @Revision:    0.3.184
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
@@ -20,6 +20,14 @@ augroup END
 function! s:RunHooks(mode, condition) "{{{3
     if !exists('b:hookcursormoved_'. a:mode .'_'. a:condition)
         return
+    endif
+    if !exists('b:hookcursormoved_synname')
+        let b:hookcursormoved_synname = ''
+        let b:hookcursormoved_synpos  = []
+    endif
+    if !exists('b:hookcursormoved_char')
+        let b:hookcursormoved_char     = ''
+        let b:hookcursormoved_charpos  = []
     endif
     let b:hookcursormoved_currpos = getpos('.')
     " TLogVAR a:condition, g:hookcursormoved_{a:condition}
@@ -150,27 +158,43 @@ endf
 
 
 function! s:Col(mode, col) "{{{3
-    let co = a:col - 1
-    if a:mode == 'i'
+    " let co = a:col - 1
+    let co = a:col
+    if a:mode == 'i' && co > 1
         let co -= 1
     endif
+    " TLogVAR co
+    " TLogDBG getline('.')[co - 1]
     return co
 endf
 
 
 function! s:CheckChars(mode, chars) "{{{3
-    let li = getline('.')
-    let co = s:Col(a:mode, col('.'))
-    let ch = li[co]
-    let rv = !empty(ch) && stridx(a:chars, ch) != -1
-    " TLogVAR a:mode, li, co, ch, rv
+    if b:hookcursormoved_charpos != b:hookcursormoved_currpos
+        let ln = b:hookcursormoved_currpos[1]
+        let cn = b:hookcursormoved_currpos[2]
+        let li = getline(ln)
+        let co = s:Col(a:mode, cn)
+        let b:hookcursormoved_char = li[co - 1]
+        let b:hookcursormoved_charpos = b:hookcursormoved_currpos
+    endif
+    let rv = !empty(b:hookcursormoved_char) && stridx(a:chars, b:hookcursormoved_char) != -1
+    " TLogVAR a:mode, li, co, rv, b:hookcursormoved_char
     return rv
 endf
 
 
 function! s:SynId(mode, pos) "{{{3
-    let syn = synIDattr(synID(a:pos[1], s:Col(a:mode, a:pos[2]), 1), 'name')
-    " TLogVAR syn
-    return syn
+    if a:pos != b:hookcursormoved_synpos
+        let li = a:pos[1]
+        let co = s:Col(a:mode, a:pos[2])
+        " let synid = synID(li, co, 1)
+        let synid = synID(li, co, 0)
+        let b:hookcursormoved_synname = synIDattr(synid, 'name')
+        let b:hookcursormoved_synpos  = a:pos
+        " TLogVAR li, co, synid, b:hookcursormoved_synname
+        " TLogDBG synID(li, co, 0)
+    endif
+    return b:hookcursormoved_synname
 endf
 
