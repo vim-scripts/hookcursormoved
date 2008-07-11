@@ -42,7 +42,7 @@ please make sure, you have the current version of vimball (vimscript
 This script requires tlib (vimscript #1863) to be installed.
 
 
-------------------------------------------------------------------------
+========================================================================
 Contents~
 
     plugin/hookcursormoved.vim
@@ -67,7 +67,7 @@ Contents~
         hookcursormoved#Test_syntaxleave_oneline ....... |hookcursormoved#Test_syntaxleave_oneline()|
 
 
-------------------------------------------------------------------------
+========================================================================
 plugin/hookcursormoved.vim~
 
 
@@ -110,17 +110,14 @@ g:hookcursormoved_syntaxleave_oneline (default: 'hookcursormoved#Test_syntaxleav
     changes.
 
 
-
-
-
-------------------------------------------------------------------------
+========================================================================
 autoload/hookcursormoved.vim~
 
                                                     *hookcursormoved#Enable()*
 hookcursormoved#Enable(condition)
 
                                                     *hookcursormoved#Register()*
-hookcursormoved#Register(condition, fn, ?mode='ni')
+hookcursormoved#Register(condition, fn, ?mode='ni', ?remove=0)
 
                                                     *hookcursormoved#Test_linechange()*
 hookcursormoved#Test_linechange(mode)
@@ -147,3 +144,5 @@ hookcursormoved#Test_syntaxleave(mode)
 hookcursormoved#Test_syntaxleave_oneline(mode)
 
 
+
+vim:tw=78:fo=tcq2:isk=!-~,^*,^|,^":ts=8:ft=help:norl:

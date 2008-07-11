@@ -3,14 +3,14 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-11-19.
-" @Revision:    0.7.114
+" @Last Change: 2008-07-11.
+" @Revision:    0.8.116
 " GetLatestVimScripts: 2037 1 hookcursormoved.vim
 
 if &cp || exists("loaded_hookcursormoved")
     finish
 endif
-let loaded_hookcursormoved = 7
+let loaded_hookcursormoved = 8
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -104,4 +104,7 @@ function name as string).
 0.7
 - Minor tweaks
 - FIX: Check correct column in s:CheckChars()
+
+0.8
+- hookcursormoved#Register: Allow deregister
 

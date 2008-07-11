@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2007-11-19.
-" @Revision:    0.3.184
+" @Last Change: 2008-07-11.
+" @Revision:    0.3.211
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
@@ -21,15 +21,6 @@ function! s:RunHooks(mode, condition) "{{{3
     if !exists('b:hookcursormoved_'. a:mode .'_'. a:condition)
         return
     endif
-    if !exists('b:hookcursormoved_synname')
-        let b:hookcursormoved_synname = ''
-        let b:hookcursormoved_synpos  = []
-    endif
-    if !exists('b:hookcursormoved_char')
-        let b:hookcursormoved_char     = ''
-        let b:hookcursormoved_charpos  = []
-    endif
-    let b:hookcursormoved_currpos = getpos('.')
     " TLogVAR a:condition, g:hookcursormoved_{a:condition}
     if call(g:hookcursormoved_{a:condition}, [a:mode])
         let hooks = b:hookcursormoved_{a:mode}_{a:condition}
@@ -46,25 +37,44 @@ function! s:RunHooks(mode, condition) "{{{3
             unlet HookFn
         endfor
     endif
-    let b:hookcursormoved_oldpos = b:hookcursormoved_currpos
+endf
+
+
+function! s:SaveCursorPos() "{{{3
+    if exists('b:hookcursormoved_currpos')
+        let b:hookcursormoved_oldpos = b:hookcursormoved_currpos
+        " TLogVAR b:hookcursormoved_oldpos
+    endif
+    let b:hookcursormoved_currpos = getpos('.')
+    " TLogVAR b:hookcursormoved_currpos
 endf
 
 
 function! hookcursormoved#Enable(condition) "{{{3
     if !exists('b:hookcursormoved_enabled')
         let b:hookcursormoved_enabled = []
+        autocmd HookCursorMoved CursorMoved,CursorMovedI <buffer> call s:SaveCursorPos()
     endif
     if index(b:hookcursormoved_enabled, a:condition) == -1
         exec 'autocmd HookCursorMoved CursorMoved  <buffer> call s:RunHooks("n", '. string(a:condition) .')'
         exec 'autocmd HookCursorMoved CursorMovedI <buffer> call s:RunHooks("i", '. string(a:condition) .')'
         call add(b:hookcursormoved_enabled, a:condition)
     endif
+    if !exists('b:hookcursormoved_synname')
+        let b:hookcursormoved_synname = ''
+        let b:hookcursormoved_synpos  = []
+    endif
+    if !exists('b:hookcursormoved_char')
+        let b:hookcursormoved_char     = ''
+        let b:hookcursormoved_charpos  = []
+    endif
 endf
 
 
-" :def: function! hookcursormoved#Register(condition, fn, ?mode='ni')
+" :def: function! hookcursormoved#Register(condition, fn, ?mode='ni', ?remove=0)
 function! hookcursormoved#Register(condition, fn, ...) "{{{3
-    let modes = a:0 >= 1 ? a:1 : 'ni'
+    let modes  = a:0 >= 1 && a:1 != '' ? a:1 : 'ni'
+    let remove = a:0 >= 2 ? a:2 : 0
     " TLogVAR a:condition, a:fn, mode
     " TLogDBG exists('*hookcursormoved#Test_'. a:condition)
     if exists('g:hookcursormoved_'. a:condition)
@@ -76,10 +86,23 @@ function! hookcursormoved#Register(condition, fn, ...) "{{{3
             if stridx(mode, 'n') != -1
                 let var = 'b:hookcursormoved_n_'. a:condition
             endif
-            if !exists(var)
-                let {var} = [a:fn]
+            " TLogVAR remove, a:fn
+            if remove
+                if exists(var)
+                    " TLogVAR {var}
+                    let idx = index({var}, a:fn)
+                    if idx >= 0
+                        call remove({var}, idx)
+                        " TLogVAR {var}
+                    endif
+                endif
             else
-                call add({var}, a:fn)
+                if !exists(var)
+                    let {var} = [a:fn]
+                else
+                    call add({var}, a:fn)
+                endif
+                " TLogVAR {var}
             endif
         endfor
     else
@@ -89,6 +112,7 @@ endf
 
 
 function! hookcursormoved#Test_linechange(mode) "{{{3
+    " TLogVAR a:mode
     return exists('b:hookcursormoved_oldpos')
                 \ && b:hookcursormoved_currpos[1] != b:hookcursormoved_oldpos[1]
 endf
