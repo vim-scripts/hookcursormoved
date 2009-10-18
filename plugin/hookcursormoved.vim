@@ -1,16 +1,16 @@
 " hookcursormoved.vim
-" @Author:      Thomas Link (micathom AT gmail com?subject=[vim])
+" @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2008-07-11.
-" @Revision:    0.8.116
+" @Last Change: 2009-08-01.
+" @Revision:    0.8.126
 " GetLatestVimScripts: 2037 1 hookcursormoved.vim
 
 if &cp || exists("loaded_hookcursormoved")
     finish
 endif
-let loaded_hookcursormoved = 8
+let loaded_hookcursormoved = 9
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -108,3 +108,8 @@ function name as string).
 0.8
 - hookcursormoved#Register: Allow deregister
 
+0.9
+- hookcursormoved#Register: Print a message on unknown hooks (don't 
+throw an error)
+- hookcursormoved#Register: If g:hookcursormoved_linechange is 
+undefined, assume the plugin wasn't loaded.

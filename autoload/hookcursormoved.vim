@@ -1,16 +1,17 @@
 " hookcursormoved.vim
-" @Author:      Thomas Link (mailto:micathom AT gmail com?subject=[vim])
+" @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-10-04.
-" @Last Change: 2008-07-11.
-" @Revision:    0.3.211
+" @Last Change: 2009-08-03.
+" @Revision:    0.3.227
 
 if &cp || exists("loaded_hookcursormoved_autoload")
     finish
 endif
 let loaded_hookcursormoved_autoload = 3
 
+let s:unknown_hooks = []
 
 augroup HookCursorMoved
     autocmd!
@@ -33,19 +34,24 @@ function! s:RunHooks(mode, condition) "{{{3
                 echom v:errmsg
                 echohl NONE
             endtry
-            call setpos('.', b:hookcursormoved_currpos)
+            if winsaveview() != b:hookcursormoved_currview
+                call winrestview(b:hookcursormoved_currview)
+                " call setpos('.', b:hookcursormoved_currpos)
+            endif
             unlet HookFn
         endfor
     endif
 endf
 
 
-function! s:SaveCursorPos() "{{{3
+function! s:SaveView() "{{{3
     if exists('b:hookcursormoved_currpos')
         let b:hookcursormoved_oldpos = b:hookcursormoved_currpos
+        let b:hookcursormoved_oldview = b:hookcursormoved_currview
         " TLogVAR b:hookcursormoved_oldpos
     endif
     let b:hookcursormoved_currpos = getpos('.')
+    let b:hookcursormoved_currview = winsaveview()
     " TLogVAR b:hookcursormoved_currpos
 endf
 
@@ -53,7 +59,7 @@ endf
 function! hookcursormoved#Enable(condition) "{{{3
     if !exists('b:hookcursormoved_enabled')
         let b:hookcursormoved_enabled = []
-        autocmd HookCursorMoved CursorMoved,CursorMovedI <buffer> call s:SaveCursorPos()
+        autocmd HookCursorMoved CursorMoved,CursorMovedI <buffer> call s:SaveView()
     endif
     if index(b:hookcursormoved_enabled, a:condition) == -1
         exec 'autocmd HookCursorMoved CursorMoved  <buffer> call s:RunHooks("n", '. string(a:condition) .')'
@@ -73,10 +79,15 @@ endf
 
 " :def: function! hookcursormoved#Register(condition, fn, ?mode='ni', ?remove=0)
 function! hookcursormoved#Register(condition, fn, ...) "{{{3
+    if !exists('g:hookcursormoved_linechange')
+        " Not loaded
+        return
+    endif
     let modes  = a:0 >= 1 && a:1 != '' ? a:1 : 'ni'
     let remove = a:0 >= 2 ? a:2 : 0
     " TLogVAR a:condition, a:fn, mode
     " TLogDBG exists('*hookcursormoved#Test_'. a:condition)
+    " TLogVAR 'g:hookcursormoved_'. a:condition, exists('g:hookcursormoved_'. a:condition)
     if exists('g:hookcursormoved_'. a:condition)
         call hookcursormoved#Enable(a:condition)
         for mode in split(modes, '\ze')
@@ -105,8 +116,11 @@ function! hookcursormoved#Register(condition, fn, ...) "{{{3
                 " TLogVAR {var}
             endif
         endfor
-    else
-        throw 'hookcursormoved: Unknown condition: '. string(a:condition)
+    elseif index(s:unknown_hooks, a:condition) == -1
+        call add(s:unknown_hooks, a:condition)
+        echohl Error
+        echom 'hookcursormoved: Unknown condition: '. string(a:condition)
+        echohl None
     endif
 endf
 
